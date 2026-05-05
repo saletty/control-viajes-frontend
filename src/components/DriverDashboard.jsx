@@ -13,20 +13,26 @@ const DriverDashboard = () => {
 
   useEffect(() => {
     const fetchDriverTrips = async () => {
-      try {
-        const user = JSON.parse(localStorage.getItem("user"));
+  try {
+    const user = JSON.parse(localStorage.getItem("user"));
 
-        const res = await fetch(`${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`);
-        const data = await response.json();
+    const res = await fetch(
+      `${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`
+    );
 
-        const myTrips = data.filter(t => t.driverName === user?.name);
-        setTrips(myTrips);
-      } catch (error) {
-        console.error("Error al cargar viajes", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const data = await res.json();
+
+    console.log("TRIPS BACKEND:", data);
+
+    // 🔥 IMPORTANTE: ya vienen filtrados desde backend
+    setTrips(data);
+
+  } catch (error) {
+    console.error("Error al cargar viajes", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
     if (user?.name) fetchDriverTrips();
   }, [user]);
