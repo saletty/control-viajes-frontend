@@ -23,16 +23,35 @@ const TripDetails = () => {
   /* =======================
      TRIP
   ======================= */
-  useEffect(() => {
-    const fetchTrip = async () => {
-      const res = await fetch(`${API_URL}/api/Trips/driver`);
-      const data = await res.json();
-      setTrip(data.find(t => t.id === parseInt(id)));
-    };
+useEffect(() => {
+      const fetchTrip = async () => {
+        try {
+          const user = JSON.parse(localStorage.getItem("user"));
 
-    fetchTrip();
-  }, [id]);
+          const res = await fetch(
+            `${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`
+          );
 
+          if (!res.ok) throw new Error("Error al obtener viaje");
+
+          const data = await res.json();
+
+          const found = data.find(t => t.id === parseInt(id));
+
+          if (!found) {
+            setTrip(null);
+          } else {
+            setTrip(found);
+          }
+
+        } catch (err) {
+          console.error(err);
+          setTrip(null);
+        }
+      };
+
+      fetchTrip();
+    }, [id]);
   /* =======================
      PHOTOS
   ======================= */

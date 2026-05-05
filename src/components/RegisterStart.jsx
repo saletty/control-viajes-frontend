@@ -21,10 +21,17 @@ export default function RegisterStart() {
         setLoading(true);
         
         // 1. Obtener datos del viaje
-        const resTrip = await fetch(`${API_URL}/api/Trips/driver`);
-        if (!resTrip.ok) throw new Error("Error al obtener viajes");
-        const tripsData = await resTrip.json();
-        const selectedTrip = tripsData.find(t => t.id === parseInt(id));
+        const user = JSON.parse(localStorage.getItem("user"));
+
+const resTrip = await fetch(
+  `${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`
+);
+
+if (!resTrip.ok) throw new Error("Error al obtener viajes");
+
+const tripsData = await resTrip.json();
+
+const selectedTrip = tripsData.find(t => t.id === parseInt(id));
         
         if (selectedTrip) {
           setTrip(selectedTrip);

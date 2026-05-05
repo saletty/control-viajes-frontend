@@ -20,9 +20,15 @@ export default function RegisterArrival() {
         setLoading(true);
 
         // VIAJE
-        const resTrip = await fetch(`${API_URL}/api/Trips/driver`);
-        const trips = await resTrip.json();
-        const selected = trips.find(t => t.id === parseInt(id));
+        const user = JSON.parse(localStorage.getItem("user"));
+
+            const resTrip = await fetch(
+            `${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`
+            );
+
+            const trips = await resTrip.json();
+
+            const selected = trips.find(t => t.id === parseInt(id));
 
         if (!selected) {
           setError("No se encontró el viaje.");
