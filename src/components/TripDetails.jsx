@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, X } from 'lucide-react';
 import API_URL from "../api";
 
-
 const TripDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -12,7 +11,6 @@ const TripDetails = () => {
   const [photos, setPhotos] = useState([]);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [modal, setModal] = useState(null);
 
   // 🎙️ AUDIO STATE
@@ -20,153 +18,100 @@ const TripDetails = () => {
   const [audioBlobs, setAudioBlobs] = useState([]);
   const [mediaRecorder, setMediaRecorder] = useState(null);
 
+  // Limpiador de URLs para evitar doble barra o rutas rotas
+  const getFullUrl = (path) => {
+    if (!path) return "";
+    const cleanBase = API_URL.replace(/\/$/, "");
+    const cleanPath = path.replace(/^\//, "");
+    return `${cleanBase}/${cleanPath}`;
+  };
+
   /* =======================
-     TRIP
+      DATA FETCHING
   ======================= */
-useEffect(() => {
-      const fetchTrip = async () => {
-        try {
-          const user = JSON.parse(localStorage.getItem("user"));
+  const fetchData = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      
+      // Cargar Viaje
+      const tripRes = await fetch(`${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`);
+      const trips = await tripRes.json();
+      const found = trips.find(t => t.id === parseInt(id));
+      setTrip(found);
 
-          const res = await fetch(
-            `${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`
-          );
+      // Cargar Fotos
+      const photoRes = await fetch(`${API_URL}/api/TripPhotos/${id}`);
+      setPhotos(await photoRes.json());
 
-          if (!res.ok) throw new Error("Error al obtener viaje");
+      // Cargar Eventos
+      const eventRes = await fetch(`${API_URL}/api/TripEvents/${id}`);
+      setEvents(await eventRes.json());
 
-          const data = await res.json();
-
-          const found = data.find(t => t.id === parseInt(id));
-
-          if (!found) {
-            setTrip(null);
-          } else {
-            setTrip(found);
-          }
-
-        } catch (err) {
-          console.error(err);
-          setTrip(null);
-        }
-      };
-
-      fetchTrip();
-    }, [id]);
-  /* =======================
-     PHOTOS
-  ======================= */
-  useEffect(() => {
-    const fetchPhotos = async () => {
-      const res = await fetch(`${API_URL}/api/TripPhotos/${id}`);
-      const data = await res.json();
-      setPhotos(data);
       setLoading(false);
-    };
-
-    fetchPhotos();
-  }, [id]);
-
-  /* =======================
-     EVENTS
-  ======================= */
-  const fetchEvents = async () => {
-    const res = await fetch(`${API_URL}/api/TripEvents/${id}`);
-    const data = await res.json();
-    setEvents(data);
+    } catch (err) {
+      console.error("Error cargando datos:", err);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchEvents();
+    fetchData();
   }, [id]);
 
   const salidaPhotos = photos.filter(p => p.type === "SALIDA");
   const llegadaPhotos = photos.filter(p => p.type === "LLEGADA");
 
   /* =======================
-     AUDIO RECORDING
+      AUDIO RECORDING
   ======================= */
-const startRecording = async () => {
-  try {
-    // 1. Validar que no se pase del límite sumando los ya subidos + los pendientes
-    if (events.length + audioBlobs.length >= 2) {
-      alert("Ya tienes el límite de 2 audios (entre subidos y pendientes)");
-      return;
-    }
-    
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    
-    // ❌ BORRA O COMENTA ESTA LÍNEA:
-    // setAudioBlobs([]);  <-- Esta línea es la que te borra el primer audio
+  const startRecording = async () => {
+    try {
+      if (events.length + audioBlobs.length >= 2) {
+        alert("Límite de 2 audios alcanzado");
+        return;
+      }
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks = [];
 
-    const recorder = new MediaRecorder(stream);
-    const chunks = [];
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
 
-    recorder.ondataavailable = (e) => {
-      if (e.data.size > 0) chunks.push(e.data);
-    };
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "audio/mpeg" }); // MP3 para mejor compatibilidad
+        setAudioBlobs(prev => [...prev, blob]);
+        setRecording(false);
+        stream.getTracks().forEach(track => track.stop());
+      };
 
-    recorder.onstop = () => {
-      const blob = new Blob(chunks, { type: "audio/webm" });
-      // ✅ Esto añade el nuevo audio sin borrar los anteriores
-      setAudioBlobs(prev => [...prev, blob]);
-      setRecording(false);
-      stream.getTracks().forEach(track => track.stop());
-    };
-
-    recorder.start();
-    setMediaRecorder(recorder);
-    setRecording(true);
-
-  } catch (err) {
-    console.error("Error micrófono:", err);
-    alert("No se pudo acceder al micrófono");
-  }
-};
-
-  const stopRecording = () => {
-    if (mediaRecorder && recording) {
-         mediaRecorder.stop();
+      recorder.start();
+      setMediaRecorder(recorder);
+      setRecording(true);
+    } catch (err) {
+      alert("No se pudo acceder al micrófono");
     }
   };
 
-   const uploadEvent = async () => {
-  if (audioBlobs.length === 0) return;
+  const uploadEvent = async () => {
+    if (audioBlobs.length === 0) return;
+    try {
+      for (const [index, blob] of audioBlobs.entries()) {
+        const formData = new FormData();
+        formData.append("audio", blob, `evento_${Date.now()}.mp3`);
 
-  try {
-    console.log("Iniciando subida de", audioBlobs.length, "audios");
-
-    // Usamos for...of para que el 'await' funcione correctamente de forma secuencial
-    for (const [index, blob] of audioBlobs.entries()) {
-      const formData = new FormData();
-      // Le damos un nombre distinto a cada archivo para evitar colisiones
-      formData.append("audio", blob, `audio_evento_${index}.webm`);
-
-      const res = await fetch(`${API_URL}/api/TripEvents/${id}`, {
-        method: "POST",
-        body: formData
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Error en audio ${index + 1}: ${errorText}`);
+        const res = await fetch(`${API_URL}/api/TripEvents/${id}`, {
+          method: "POST",
+          body: formData
+        });
+        if (!res.ok) throw new Error("Fallo al subir audio");
       }
-      
-      console.log(`Audio ${index + 1} subido con éxito`);
+      setAudioBlobs([]);
+      fetchData(); // Refrescar lista
+      alert("✔ Audios subidos correctamente");
+    } catch (err) {
+      alert(err.message);
     }
-
-    // Solo si todos se subieron bien, limpiamos la lista de espera
-    setAudioBlobs([]);
-    await fetchEvents(); // Refrescar la lista desde la BD
-    alert("✔ Todos los audios se subieron correctamente");
-
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-    // Refrescamos igual para ver qué alcanzó a subirse
-    await fetchEvents();
-  }
-};
-
+  };
   /* =======================
      LOADING
   ======================= */
