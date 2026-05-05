@@ -51,40 +51,53 @@ const CameraUpload = () => {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       canvas.getContext('2d').drawImage(video, 0, 0);
-      const dataUrl = canvas.toDataURL('image/jpeg');
+      
+      // Cambia 'image/jpeg' por esto, el 0.7 reduce la calidad al 70% y baja mucho el peso
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
       setImage(dataUrl);
       stopCamera();
     }
   };
 
   const uploadPhoto = async () => {
-  if (!image) return;
+  if (!image || !tripId) {
+    alert("Faltan datos: ID del viaje o imagen.");
+    return;
+  }
+  
   setUploading(true);
 
   try {
+    // 1. Convertir la imagen
     const response = await fetch(image);
     const blob = await response.blob();
 
     const formData = new FormData();
-    formData.append('file', blob, `photo_${Date.now()}.jpg`);
+    // Importante: El tercer parámetro asegura que el archivo tenga nombre y extensión
+    formData.append('file', blob, `trip_${tripId}_${type}.jpg`);
 
-      const uploadRes = await fetch(
-        `${API_URL}/api/TripPhotos/${tripId}?type=${type.toUpperCase()}`,
-        {
-          method: "POST",
-          body: formData
-        }
-      );
+    // 2. Limpiar la URL (asegurarse de que no haya dobles barras)
+    const baseApi = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+    const finalUrl = `${baseApi}/api/TripPhotos/${tripId}?type=${type.toUpperCase()}`;
+
+    console.log("Intentando subir a:", finalUrl);
+
+    const uploadRes = await fetch(finalUrl, {
+      method: "POST",
+      body: formData, // No incluyas Headers de Content-Type aquí
+    });
 
     if (uploadRes.ok) {
-      navigate(-1);
+      alert("Foto enviada con éxito");
+      navigate(-1); // Regresa a la pantalla de registro
     } else {
-      const err = await uploadRes.text();
-      alert("Error servidor: " + err);
+      const errorTexto = await uploadRes.text();
+      alert(`Error del servidor: ${errorTexto}`);
     }
   } catch (err) {
-    console.error("Error en la subida:", err);
-    alert("Error de conexión con el servidor");
+    console.error("Error de conexión:", err);
+    // En Render, esto pasa si la URL es incorrecta o el servidor tarda en despertar
+    alert("Error de conexión con el servidor. Revisa si el backend está activo.");
   } finally {
     setUploading(false);
   }
