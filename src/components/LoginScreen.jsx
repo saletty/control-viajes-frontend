@@ -25,7 +25,7 @@ const LoginScreen = () => {
     setLoading(true);
 
     try {
-     const response = await fetch('${API_URL}/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/Auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,36 +33,33 @@ const LoginScreen = () => {
         body: JSON.stringify({ username, password }),
       });
 
+      const text = await response.text();
+      console.log("RESPUESTA BACKEND:", text);
+
       if (!response.ok) {
         throw new Error('Usuario o contraseña incorrectos');
       }
 
-      const text = await res.text();
-        console.log("RESPUESTA BACKEND:", text);
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error("Respuesta inválida del servidor");
+      }
 
-        let data;
-        try {
-          data = JSON.parse(text);
-        } catch {
-          console.error("No es JSON válido");
-        }
-      
-      // 1. Guardar en el Contexto (Asegúrate que coincida con lo que tu AuthContext espera)
-      // Usamos data.user si el backend devuelve el objeto agrupado, o data directamente
-      const userData = data.user || data; 
-      
+      const userData = data;
+
       login({
-        name: userData.name || userData.username,
+        name: userData.name,
         role: userData.role,
         token: data.token,
       });
 
-      // 2. Persistencia manual (opcional, si tu login() no lo hace ya)
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(userData));
 
-      // 3. Redirección por Rol corregida
       const role = userData.role;
+
       if (role === "Operaciones" || role === "Admin") {
         navigate("/dashboard");
       } else if (role === "Conductor") {
@@ -77,7 +74,7 @@ const LoginScreen = () => {
       setLoading(false);
     }
   };
-
+};
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-12 rounded-[2rem] shadow-lg border border-gray-100 w-full max-w-lg">
