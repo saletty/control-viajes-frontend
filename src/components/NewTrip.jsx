@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_URL from "../api";
 
 export default function NewTrip() {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ export default function NewTrip() {
     try {
       setLoading(true);
 
-      const res = await fetch('https://localhost:7070/api/trips', {
+      const res = await fetch('${API_URL}/api/trips', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

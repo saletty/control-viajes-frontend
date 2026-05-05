@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Truck, LogOut, Eye, Check, X } from 'lucide-react';
 import { logout } from "../utils/auth"; 
 import { useAuth } from '../context/AuthContext';
+import API_URL from "../api";
 
 
 export default function OperationsDashboard() {
@@ -37,7 +38,7 @@ export default function OperationsDashboard() {
       if (filters.semiremolque) params.append("semiremolque", filters.semiremolque);
       if (filters.status !== "all") params.append("status", filters.status);
 
-      const res = await fetch(`https://localhost:7070/api/trips?${params}`);
+      const res = await fetch(`${API_URL}/api/trips?${params}`);
       if (!res.ok) throw new Error("Error en backend");
 
       const data = await res.json();
@@ -56,7 +57,7 @@ export default function OperationsDashboard() {
 
   const finishTrip = async (id) => {
     try {
-      const res = await fetch(`https://localhost:7070/api/trips/${id}/finish`, { method: 'PUT' });
+      const res = await fetch(`${API_URL}/api/trips/${id}/finish`, { method: 'PUT' });
       if (!res.ok) throw new Error(await res.text());
       fetchTrips();
     } catch (error) {
@@ -66,7 +67,7 @@ export default function OperationsDashboard() {
 
   const rejectTrip = async (id) => {
     try {
-      const res = await fetch(`https://localhost:7070/api/trips/${id}/reject`, { method: 'PUT' });
+      const res = await fetch(`${API_URL}/api/trips/${id}/reject`, { method: 'PUT' });
       if (!res.ok) throw new Error(await res.text());
       fetchTrips();
     } catch (error) {

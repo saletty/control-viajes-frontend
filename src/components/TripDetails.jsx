@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, X } from 'lucide-react';
+import API_URL from "../api";
 
-const API_URL = 'https://localhost:7070';
 
 const TripDetails = () => {
   const { id } = useParams();

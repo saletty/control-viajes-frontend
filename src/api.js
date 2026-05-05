@@ -1,7 +1,4 @@
-import axios from 'axios';
+const API_URL =
+  import.meta.env.VITE_API_URL || "https://localhost:7070";
 
-const api = axios.create({
-  baseURL: 'https://defective-cried-maternity.ngrok-free.dev/api'
-});
-
-export default api;
+export default API_URL;

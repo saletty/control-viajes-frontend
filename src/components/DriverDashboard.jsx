@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Truck, LogOut, Camera } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import API_URL from "../api";
 
 const DriverDashboard = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const DriverDashboard = () => {
   useEffect(() => {
     const fetchDriverTrips = async () => {
       try {
-        const response = await fetch('https://localhost:7070/api/Trips/driver');
+        const response = await fetch('${API_URL}/api/Trips/driver');
         const data = await response.json();
 
         const myTrips = data.filter(t => t.driverName === user?.name);

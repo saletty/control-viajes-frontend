@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, Camera, CheckCircle2, Loader2 } from "lucide-react";
+import API_URL from "../api";
 
 export default function RegisterStart() {
   const { id } = useParams();
@@ -20,7 +21,7 @@ export default function RegisterStart() {
         setLoading(true);
         
         // 1. Obtener datos del viaje
-        const resTrip = await fetch(`https://localhost:7070/api/Trips/driver`);
+        const resTrip = await fetch(`${API_URL}/api/Trips/driver`);
         if (!resTrip.ok) throw new Error("Error al obtener viajes");
         const tripsData = await resTrip.json();
         const selectedTrip = tripsData.find(t => t.id === parseInt(id));
@@ -32,7 +33,7 @@ export default function RegisterStart() {
         }
 
         // 2. Obtener fotos ya subidas para este viaje (tipo SALIDA)
-        const resPhotos = await fetch(`https://localhost:7070/api/TripPhotos/${id}`);
+        const resPhotos = await fetch(`${API_URL}/api/TripPhotos/${id}`);
         if (resPhotos.ok) {
           const photosData = await resPhotos.json();
           const salidaPhotos = photosData.filter(p => p.type === "SALIDA");
@@ -54,7 +55,7 @@ export default function RegisterStart() {
   const handleConfirmarSalida = async () => {
     setIsSubmitting(true);
     try {
-      const response = await fetch(`https://localhost:7070/api/Trips/${id}/start`, {
+      const response = await fetch(`${API_URL}/api/Trips/${id}/start`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' }
       });

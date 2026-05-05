@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Truck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import API_URL from "../api";
 
 const LoginScreen = () => {
   const [username, setUsername] = useState('');
@@ -24,7 +25,7 @@ const LoginScreen = () => {
     setLoading(true);
 
     try {
-     const response = await fetch('https://localhost:7070/api/auth/login', {
+     const response = await fetch('${API_URL}/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

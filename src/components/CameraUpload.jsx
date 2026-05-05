@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Camera, RefreshCw, Check, X } from 'lucide-react';
+import API_URL from "../api";
 
 const CameraUpload = () => {
   const { tripId, type } = useParams();
@@ -67,10 +68,13 @@ const CameraUpload = () => {
     const formData = new FormData();
     formData.append('file', blob, `photo_${Date.now()}.jpg`);
 
-    const uploadRes = await fetch(`https://localhost:7070/api/TripPhotos/${tripId}?type=${type.toUpperCase()}`, {
-      method: 'POST',
-      body: formData,
-    });
+      const uploadRes = await fetch(
+        `${API_URL}/api/TripPhotos/${tripId}?type=${type.toUpperCase()}`,
+        {
+          method: "POST",
+          body: formData
+        }
+      );
 
     if (uploadRes.ok) {
       navigate(-1);

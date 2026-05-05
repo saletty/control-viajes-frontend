@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, Camera, CheckCircle2, Loader2 } from "lucide-react";
+import API_URL from "../api";
 
 export default function RegisterArrival() {
   const { id } = useParams();
@@ -19,7 +20,7 @@ export default function RegisterArrival() {
         setLoading(true);
 
         // VIAJE
-        const resTrip = await fetch(`https://localhost:7070/api/Trips/driver`);
+        const resTrip = await fetch(`${API_URL}/api/Trips/driver`);
         const trips = await resTrip.json();
         const selected = trips.find(t => t.id === parseInt(id));
 
@@ -31,7 +32,7 @@ export default function RegisterArrival() {
         setTrip(selected);
 
         // FOTOS
-        const resPhotos = await fetch(`https://localhost:7070/api/TripPhotos/${id}`);
+        const resPhotos = await fetch(`${API_URL}/api/TripPhotos/${id}`);
         if (resPhotos.ok) {
           const data = await resPhotos.json();
 
@@ -61,7 +62,7 @@ export default function RegisterArrival() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(`https://localhost:7070/api/Trips/${id}/finish`, {
+      const res = await fetch(`${API_URL}/api/Trips/${id}/finish`, {
         method: "PUT"
       });
 
