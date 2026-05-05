@@ -14,7 +14,9 @@ const DriverDashboard = () => {
   useEffect(() => {
     const fetchDriverTrips = async () => {
       try {
-        const response = await fetch('${API_URL}/api/Trips/driver');
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        const res = await fetch(`${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`);
         const data = await response.json();
 
         const myTrips = data.filter(t => t.driverName === user?.name);
