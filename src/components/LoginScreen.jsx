@@ -37,7 +37,15 @@ const LoginScreen = () => {
         throw new Error('Usuario o contraseña incorrectos');
       }
 
-      const data = await response.json();
+      const text = await res.text();
+        console.log("RESPUESTA BACKEND:", text);
+
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          console.error("No es JSON válido");
+        }
       
       // 1. Guardar en el Contexto (Asegúrate que coincida con lo que tu AuthContext espera)
       // Usamos data.user si el backend devuelve el objeto agrupado, o data directamente
