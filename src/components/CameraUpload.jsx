@@ -87,17 +87,19 @@ const CameraUpload = () => {
       body: formData, // No incluyas Headers de Content-Type aquí
     });
 
-    if (uploadRes.ok) {
-      alert("Foto enviada con éxito");
-      navigate(-1); // Regresa a la pantalla de registro
-    } else {
-      const errorTexto = await uploadRes.text();
-      alert(`Error del servidor: ${errorTexto}`);
-    }
-  } catch (err) {
-    console.error("Error de conexión:", err);
-    // En Render, esto pasa si la URL es incorrecta o el servidor tarda en despertar
-    alert("Error de conexión con el servidor. Revisa si el backend está activo.");
+const text = await uploadRes.text();
+console.log("RESPUESTA BACKEND:", text);
+
+if (uploadRes.ok) {
+  alert("Foto enviada con éxito");
+  navigate(-1);
+} else {
+  alert("Error servidor: " + text);
+}
+  }catch (err) {
+  console.error("ERROR REAL:", err);
+  alert("ERROR REAL: " + err.message);
+
   } finally {
     setUploading(false);
   }
