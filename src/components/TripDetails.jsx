@@ -72,8 +72,16 @@ const TripDetails = () => {
 
       recorder.onstop = () => {
         const blob = new Blob(chunks, { type: "audio/webm" });
-        setAudioBlobs(prev => [...prev, blob]);
+
+        //  Crear URL para preview
+        const audioUrl = URL.createObjectURL(blob);
+        //  Guardar como objeto (blob + url)
+        setAudioBlobs(prev => [
+          ...prev,
+          { blob, url: audioUrl }
+        ]);
         setRecording(false);
+        //  Detener micrófono
         stream.getTracks().forEach(track => track.stop());
       };
 
@@ -93,9 +101,11 @@ const TripDetails = () => {
   const uploadEvent = async () => {
     if (audioBlobs.length === 0) return;
     try {
-      for (const [index, blob] of audioBlobs.entries()) {
+
+      for (const [index, audio] of audioBlobs.entries()) {
+        
         const formData = new FormData();
-        formData.append("audio", blob, `evento_${Date.now()}.webm`);
+        formData.append("audio", audio.blob, `evento_${Date.now()}_${index}.webm`);
 
         const res = await fetch(`${API_URL}/api/TripEvents/${id}`, {
           method: "POST",
@@ -103,6 +113,7 @@ const TripDetails = () => {
         });
         if (!res.ok) throw new Error("Fallo al subir audio");
       }
+      audioBlobs.forEach(a => URL.revokeObjectURL(a.url));
       setAudioBlobs([]);
       fetchData(); // Refrescar lista
       alert("✔ Audios subidos correctamente");
@@ -110,6 +121,20 @@ const TripDetails = () => {
       alert(err.message);
     }
   };
+
+      const removeAudio = (indexToRemove) => {
+      setAudioBlobs(prev => {
+        const updated = [...prev];
+
+        // 🔥 liberar memoria del preview
+        URL.revokeObjectURL(updated[indexToRemove].url);
+
+        // eliminar audio
+        updated.splice(indexToRemove, 1);
+
+        return updated;
+      });
+    };
   /* =======================
      LOADING
   ======================= */
@@ -183,14 +208,26 @@ const TripDetails = () => {
           </button>
 
           {/* Lista de audios grabados pero NO subidos todavía */}
-          {audioBlobs.length > 0 && (
-            <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-              <p className="text-sm font-bold text-blue-700">Audios por subir:</p>
-              {audioBlobs.map((_, idx) => (
-                <p key={idx} className="text-xs text-blue-600">📌 Grabación #{idx + 1} lista</p>
-              ))}
-            </div>
-          )}
+            {audioBlobs.map((audio, idx) => (
+              <div key={idx} className="bg-white p-3 rounded-lg shadow-sm flex flex-col gap-2">
+                
+                <div className="flex justify-between items-center">
+                  <p className="text-xs text-gray-500">Grabación #{idx + 1}</p>
+
+                  <button
+                    onClick={() => removeAudio(idx)}
+                    className="text-red-500 text-xs font-bold hover:scale-105"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+
+                <audio controls className="w-full">
+                  <source src={audio.url} type="audio/webm" />
+                </audio>
+
+              </div>
+            ))}
 
           <p className="text-sm text-gray-500 mt-2">
             En base de datos: {events.length} / 2 | Pendientes: {audioBlobs.length}
