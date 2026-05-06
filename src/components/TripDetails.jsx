@@ -84,6 +84,11 @@ const TripDetails = () => {
       alert("No se pudo acceder al micrófono");
     }
   };
+  const stopRecording = () => {
+  if (mediaRecorder) {
+    mediaRecorder.stop();
+  }
+};
 
   const uploadEvent = async () => {
     if (audioBlobs.length === 0) return;
