@@ -55,15 +55,20 @@ export default function OperationsDashboard() {
     fetchTrips();
   }, [filters]);
 
-  const finishTrip = async (id) => {
-    try {
-      const res = await fetch(`${API_URL}/api/trips/${id}/finish`, { method: 'PUT' });
-      if (!res.ok) throw new Error(await res.text());
-      fetchTrips();
-    } catch (error) {
-      alert(error.message);
-    }
-  };
+  const approveTrip = async (id) => {
+  try {
+    // Cambiamos /finish por /approve (o el nombre que use tu backend para aprobar)
+    const res = await fetch(`${API_URL}/api/trips/${id}/approve`, { 
+      method: 'PUT' 
+    });
+    
+    if (!res.ok) throw new Error(await res.text());
+    
+    fetchTrips(); // Recargar la tabla para ver el cambio de color
+  } catch (error) {
+    alert("Error al aprobar: " + error.message);
+  }
+};
 
   const rejectTrip = async (id) => {
     try {
@@ -218,8 +223,9 @@ export default function OperationsDashboard() {
                               <>
                                 {trip.status !== 'Aprobado' && (
                                   <button 
-                                    onClick={() => finishTrip(trip.id)}
+                                    onClick={() => approveTrip(trip.id)} // Llama a la función de aprobar
                                     className="p-2 text-gray-300 hover:text-green-500 hover:bg-green-50 rounded-full transition-all"
+                                    title="Aprobar Viaje"
                                   >
                                     <Check size={20} />
                                   </button>
