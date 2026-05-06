@@ -80,19 +80,23 @@ export default function OperationsDashboard() {
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded-lg">
+
               <img 
                 src="/logo.png" 
-                alt="Logo empresa"
-                className="h-10 w-auto object-contain drop-shadow-sm"
+                alt="Terranera"
+                className="h-10 w-auto object-contain"
               />
-            </div>
-            <div>
-              <h1 className="font-semibold text-lg">Terranera SRL</h1>
-              <p className="text-sm text-gray-500">
-                {isAdmin ? "Panel de Administración" : "Panel de Operaciones"}
-              </p>
-            </div>
+
+              <div>
+                <h1 className="font-bold text-lg text-gray-900 leading-tight">
+                  Terranera SRL
+                </h1>
+
+                <p className="text-xs text-gray-400 tracking-wide">
+                  {isAdmin ? "Panel de Administración" : "Panel de Operaciones"}
+                </p>
+              </div>
+
           </div>
 
           <div className="flex gap-3 items-center">

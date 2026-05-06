@@ -50,22 +50,24 @@ const DriverDashboard = () => {
 
       {/* HEADER */}
       <header className="bg-white px-8 py-6 flex justify-between items-center border-b border-gray-100">
-        <div className="flex items-center gap-4">
-          <div className="bg-blue-600 p-3 rounded-xl shadow-blue-100 shadow-lg">
-            <img 
-              src="/logo.png" 
-              alt="Logo empresa"
-              className="h-10 w-auto object-contain drop-shadow-sm"
-            />
-          </div>
+        <div className="flex items-center gap-3">
+
+          <img 
+            src="/logo.png" 
+            alt="Terranera"
+            className="h-10 w-auto object-contain"
+          />
+
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-xl font-bold text-gray-900 leading-tight">
               Portal del Conductor
             </h1>
-            <p className="text-gray-500 font-medium">
+
+            <p className="text-sm text-gray-400 font-medium">
               {user?.name}
             </p>
           </div>
+
         </div>
 
         <button
