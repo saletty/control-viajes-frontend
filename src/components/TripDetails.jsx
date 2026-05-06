@@ -24,11 +24,14 @@ const TripDetails = () => {
   ======================= */
   const fetchData = async () => {
     try {
-      const user = JSON.parse(sessionStorage.getItem("user"));
-      
+      const user = JSON.parse(sessionStorage.getItem("user"));     
       // Cargar Viaje
       const tripRes = await fetch(`${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`);
       const trips = await tripRes.json();
+
+      console.log("ID DE URL:", id);
+      console.log("TRIPS:", trips);
+
       const found = trips.find(t => t.id === parseInt(id));
       setTrip(found);
 
