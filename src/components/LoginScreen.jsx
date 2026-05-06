@@ -79,17 +79,24 @@ const LoginScreen = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-12 rounded-[2rem] shadow-lg w-full max-w-lg">
 
-        <div className="bg-blue-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
-          <img 
-            src="/logo.png" 
-            alt="Logo empresa"
-            className="h-8 w-auto object-contain"
-          />
+        <div className="bg-white shadow-sm px-6 py-4 flex items-center gap-4">
+
+        <img 
+          src="/logo.png" 
+          alt="Terranera"
+          className="h-10 w-auto object-contain"
+        />
+
+        <div>
+          <h1 className="text-lg font-extrabold text-gray-900 leading-tight">
+            Terranera SRL
+          </h1>
+          <p className="text-xs text-gray-400 tracking-wide">
+            Logística y Transporte
+          </p>
         </div>
 
-        <h1 className="text-3xl text-center font-bold mb-2">
-          Terranera SRL
-        </h1>
+      </div>
 
         {error && (
           <div className="bg-red-100 text-red-600 p-3 rounded mb-4 text-center">
