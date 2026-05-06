@@ -81,7 +81,11 @@ export default function OperationsDashboard() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="bg-blue-600 p-2 rounded-lg">
-              <Truck className="text-white w-5 h-5" />
+              <img 
+                src="/logo.png" 
+                alt="Logo empresa"
+                className="h-10 w-auto object-contain drop-shadow-sm"
+              />
             </div>
             <div>
               <h1 className="font-semibold text-lg">Terranera SRL</h1>

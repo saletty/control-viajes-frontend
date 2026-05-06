@@ -80,7 +80,11 @@ const LoginScreen = () => {
       <div className="bg-white p-12 rounded-[2rem] shadow-lg w-full max-w-lg">
 
         <div className="bg-blue-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
-          <Truck size={40} className="text-white" />
+          <img 
+            src="/logo.png" 
+            alt="Logo empresa"
+            className="h-8 w-auto object-contain"
+          />
         </div>
 
         <h1 className="text-3xl text-center font-bold mb-2">

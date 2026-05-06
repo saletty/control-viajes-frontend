@@ -52,7 +52,11 @@ const DriverDashboard = () => {
       <header className="bg-white px-8 py-6 flex justify-between items-center border-b border-gray-100">
         <div className="flex items-center gap-4">
           <div className="bg-blue-600 p-3 rounded-xl shadow-blue-100 shadow-lg">
-            <Truck className="text-white" size={28} />
+            <img 
+              src="/logo.png" 
+              alt="Logo empresa"
+              className="h-10 w-auto object-contain drop-shadow-sm"
+            />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
