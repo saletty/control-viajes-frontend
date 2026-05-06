@@ -22,35 +22,41 @@ const TripDetails = () => {
   /* =======================
       DATA FETCHING
   ======================= */
-  const fetchData = async () => {
-    try {
-      const user = JSON.parse(sessionStorage.getItem("user"));     
-      // Cargar Viaje
-      const tripRes = await fetch(`${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`);
-      const trips = await tripRes.json();
+const fetchData = async () => {
+  try {
+    setLoading(true);
 
-      console.log("ID DE URL:", id);
-      console.log("TRIPS:", trips);
-      console.log("USER NAME:", user.name);
-
-      const found = trips.find(t => t.id === parseInt(id));
+    // 1. Intentar obtener el viaje individual directamente por ID
+    // Si tu API no tiene un endpoint /api/Trips/:id, usaremos el general
+    const tripRes = await fetch(`${API_URL}/api/Trips/${id}`);
+    
+    if (tripRes.ok) {
+      const tripData = await tripRes.json();
+      setTrip(tripData);
+    } else {
+      // Fallback: Si el endpoint anterior no existe, traer todos y buscar
+      // (Menos eficiente, pero funciona si no tienes el endpoint individual)
+      const allRes = await fetch(`${API_URL}/api/Trips`);
+      const allTrips = await allRes.json();
+      const found = allTrips.find(t => t.id === parseInt(id));
       setTrip(found);
-
-      // Cargar Fotos
-      const photoRes = await fetch(`${API_URL}/api/TripPhotos/${id}`);
-      setPhotos(await photoRes.json());
-
-      // Cargar Eventos
-      const eventRes = await fetch(`${API_URL}/api/TripEvents/${id}`);
-      setEvents(await eventRes.json());
-
-      setLoading(false);
-    } catch (err) {
-      console.error("Error cargando datos:", err);
-      setLoading(false);
     }
-  };
 
+    // 2. Cargar Fotos y Eventos (esto ya estaba bien)
+    const [photoRes, eventRes] = await Promise.all([
+      fetch(`${API_URL}/api/TripPhotos/${id}`),
+      fetch(`${API_URL}/api/TripEvents/${id}`)
+    ]);
+
+    setPhotos(await photoRes.json());
+    setEvents(await eventRes.json());
+
+    setLoading(false);
+  } catch (err) {
+    console.error("Error cargando datos:", err);
+    setLoading(false);
+  }
+};
   useEffect(() => {
     fetchData();
   }, [id]);
