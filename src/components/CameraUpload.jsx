@@ -59,47 +59,56 @@ const CameraUpload = () => {
     }
   };
 
-  const uploadPhoto = async () => {
+    const uploadPhoto = async () => {
   if (!image || !tripId) {
-    alert("Faltan datos: ID del viaje o imagen.");
+    alert("Faltan datos");
     return;
   }
-  
+
   setUploading(true);
 
   try {
-    // 1. Convertir la imagen
-    const response = await fetch(image);
-    const blob = await response.blob();
+    const base64ToBlob = (base64) => {
+      const arr = base64.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+
+      return new Blob([u8arr], { type: mime });
+    };
+
+    const blob = base64ToBlob(image);
 
     const formData = new FormData();
-    // Importante: El tercer parámetro asegura que el archivo tenga nombre y extensión
     formData.append('file', blob, `trip_${tripId}_${type}.jpg`);
 
-    // 2. Limpiar la URL (asegurarse de que no haya dobles barras)
-    const baseApi = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
-    const finalUrl = `${baseApi}/api/TripPhotos/${tripId}?type=${type.toUpperCase()}`;
+    const finalUrl = `${API_URL}/api/TripPhotos/${tripId}?type=${type.toUpperCase()}`;
 
-    console.log("Intentando subir a:", finalUrl);
+    console.log("Subiendo a:", finalUrl);
 
     const uploadRes = await fetch(finalUrl, {
       method: "POST",
-      body: formData, // No incluyas Headers de Content-Type aquí
+      body: formData
     });
 
-const text = await uploadRes.text();
-console.log("RESPUESTA BACKEND:", text);
+    const text = await uploadRes.text();
+    console.log("RESPUESTA:", text);
 
-if (uploadRes.ok) {
-  alert("Foto enviada con éxito");
-  navigate(-1);
-} else {
-  alert("Error servidor: " + text);
-}
-  }catch (err) {
-  console.error("ERROR REAL:", err);
-  alert("ERROR REAL: " + err.message);
+    if (uploadRes.ok) {
+      alert("Foto subida ✔");
+      navigate(-1);
+    } else {
+      alert("Error servidor: " + text);
+    }
 
+  } catch (err) {
+    console.error("ERROR REAL:", err);
+    alert("ERROR REAL: " + err.message);
   } finally {
     setUploading(false);
   }
