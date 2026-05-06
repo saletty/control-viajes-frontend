@@ -25,7 +25,8 @@ export default function NewTrip() {
   useEffect(() => {
     const fetchTrucks = async () => {
       try {
-        const res = await fetch('https://localhost:7070/api/trucks');
+        const res = await fetch(`${API_URL}/api/Trucks`);
+        
 
         if (!res.ok) return;
 
@@ -60,7 +61,7 @@ export default function NewTrip() {
     try {
       setLoading(true);
 
-      const res = await fetch('${API_URL}/api/trips', {
+      const res = await fetch(`${API_URL}/api/Trips`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
