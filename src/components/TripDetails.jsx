@@ -31,6 +31,7 @@ const TripDetails = () => {
 
       console.log("ID DE URL:", id);
       console.log("TRIPS:", trips);
+      console.log("USER NAME:", user.name);
 
       const found = trips.find(t => t.id === parseInt(id));
       setTrip(found);
