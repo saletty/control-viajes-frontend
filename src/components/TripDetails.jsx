@@ -18,13 +18,6 @@ const TripDetails = () => {
   const [audioBlobs, setAudioBlobs] = useState([]);
   const [mediaRecorder, setMediaRecorder] = useState(null);
 
-  // Limpiador de URLs para evitar doble barra o rutas rotas
-  const getFullUrl = (path) => {
-    if (!path) return "";
-    const cleanBase = API_URL.replace(/\/$/, "");
-    const cleanPath = path.replace(/^\//, "");
-    return `${cleanBase}/${cleanPath}`;
-  };
 
   /* =======================
       DATA FETCHING
@@ -78,7 +71,7 @@ const TripDetails = () => {
       recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
 
       recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: "audio/mpeg" }); // MP3 para mejor compatibilidad
+        const blob = new Blob(chunks, { type: "audio/webm" });
         setAudioBlobs(prev => [...prev, blob]);
         setRecording(false);
         stream.getTracks().forEach(track => track.stop());
@@ -97,7 +90,7 @@ const TripDetails = () => {
     try {
       for (const [index, blob] of audioBlobs.entries()) {
         const formData = new FormData();
-        formData.append("audio", blob, `evento_${Date.now()}.mp3`);
+        formData.append("audio", blob, `evento_${Date.now()}.webm`);
 
         const res = await fetch(`${API_URL}/api/TripEvents/${id}`, {
           method: "POST",
@@ -161,9 +154,11 @@ const TripDetails = () => {
             <p className="text-gray-400">Sin eventos</p>
           ) : (
             events.map(e => (
+
               <audio key={e.id} controls className="w-full mb-3">
-                <source src={`${API_URL}${e.audioUrl}`} />
-              </audio>
+              <source src={e.audioUrl} type="audio/webm" />
+              Tu navegador no soporta audio
+            </audio>
             ))
           )}
         </div>
@@ -229,7 +224,7 @@ const PhotoSection = ({ title, photos, onClick }) => (
         {photos.map((photo, index) => (
           <img
             key={photo.id}
-            src={`${API_URL}${photo.url}`}
+            src={photo.url} 
             onClick={() => onClick(index)}
             className="h-40 w-full object-cover rounded-xl cursor-pointer hover:scale-105 transition"
           />
@@ -255,8 +250,8 @@ const ImageModal = ({ modal, setModal }) => {
         <X size={32} />
       </button>
 
-      <img
-        src={`${API_URL}${photos[index].url}`}
+      <img        
+        src={photos[index].url}
         className="max-h-[90%] max-w-[90%] object-contain"
       />
     </div>

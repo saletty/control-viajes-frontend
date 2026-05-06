@@ -65,9 +65,6 @@ const CameraUpload = () => {
     return;
   }
   
-  await fetch(`${API_URL}/api/TripPhotos/${tripId}`)
-    .then(r => console.log("PING OK"))
-    .catch(e => console.log("PING ERROR", e));
 
   setUploading(true);
  
@@ -90,9 +87,9 @@ const CameraUpload = () => {
     const blob = base64ToBlob(image);
 
     const formData = new FormData();
-    formData.append('file', blob, `trip_${tripId}_${type}.jpg`);
+    formData.append('file', blob, `trip_${tripId}_${type}.jpeg`);
 
-    const finalUrl = `${API_URL}/api/TripPhotos/${tripId}?type=${type.toUpperCase()}`;
+    const finalUrl = `${API_URL}/api/TripPhotos/${tripId}?type=${(type || "").toUpperCase()}`;
 
     console.log("Subiendo a:", finalUrl);
 
