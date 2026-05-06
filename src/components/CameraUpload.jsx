@@ -64,8 +64,13 @@ const CameraUpload = () => {
     alert("Faltan datos");
     return;
   }
+  
+  await fetch(`${API_URL}/api/TripPhotos/${tripId}`)
+    .then(r => console.log("PING OK"))
+    .catch(e => console.log("PING ERROR", e));
 
   setUploading(true);
+ 
 
   try {
     const base64ToBlob = (base64) => {
