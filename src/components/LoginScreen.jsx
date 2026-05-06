@@ -55,8 +55,8 @@ const LoginScreen = () => {
         token: data.token,
       });
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(userData));
+      sessionStorage.setItem("token", data.token);
+      sessionStorage.setItem("user", JSON.stringify(userData));
 
       const role = userData.role;
 

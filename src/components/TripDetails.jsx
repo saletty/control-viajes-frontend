@@ -24,7 +24,7 @@ const TripDetails = () => {
   ======================= */
   const fetchData = async () => {
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
+      const user = JSON.parse(sessionStorage.getItem("user"));
       
       // Cargar Viaje
       const tripRes = await fetch(`${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`);

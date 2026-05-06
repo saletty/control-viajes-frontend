@@ -21,7 +21,7 @@ export default function RegisterStart() {
         setLoading(true);
         
         // 1. Obtener datos del viaje
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(sessionStorage.getItem("user"));
 
 const resTrip = await fetch(
   `${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`

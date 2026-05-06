@@ -20,7 +20,7 @@ export default function RegisterArrival() {
         setLoading(true);
 
         // VIAJE
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(sessionStorage.getItem("user"));
 
             const resTrip = await fetch(
             `${API_URL}/api/Trips/driver/${encodeURIComponent(user.name)}`
