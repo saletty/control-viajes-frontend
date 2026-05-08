@@ -174,14 +174,14 @@ const fetchData = async () => {
 
         {/* FOTOS SALIDA */}
         <PhotoSection
-          title="Fotos de Salida"
+          title="Fotos de Salida AGESA"
           photos={salidaPhotos}
           onClick={(index) => setModal({ photos: salidaPhotos, index })}
         />
 
         {/* FOTOS LLEGADA */}
         <PhotoSection
-          title="Fotos de Llegada"
+          title="Fotos de Llegada NOVELIS"
           photos={llegadaPhotos}
           onClick={(index) => setModal({ photos: llegadaPhotos, index })}
         />
@@ -262,9 +262,7 @@ const fetchData = async () => {
   );
 };
 
-/* =======================
-   GALERÍA
-======================= */
+/* GALERÍA*/
 const PhotoSection = ({ title, photos, onClick }) => (
   <div className="bg-white rounded-2xl p-6 shadow">
     <h3 className="font-bold mb-4">{title} ({photos.length})</h3>
@@ -286,9 +284,7 @@ const PhotoSection = ({ title, photos, onClick }) => (
   </div>
 );
 
-/* =======================
-   MODAL
-======================= */
+/*MODAL */
 const ImageModal = ({ modal, setModal }) => {
   const { photos, index } = modal;
 

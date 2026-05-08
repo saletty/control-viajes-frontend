@@ -107,11 +107,17 @@ export default function RegisterArrival() {
         <button onClick={() => navigate(-1)}>
           <ChevronLeft size={24} />
         </button>
-        <h1 className="text-xl font-bold">Registrar Llegada</h1>
+        <h1 className="text-xl font-bold">Registrar Llegada NOVELIS</h1>
       </header>
 
       <div className="max-w-xl mx-auto p-4 space-y-6">
-
+        {/* NUEVO: Mensaje de Alerta si el viaje fue rechazado */}
+          {trip.status === "Rechazado" && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
+              <p className="text-red-700 font-bold text-sm">Viaje Rechazado por Administración</p>
+              <p className="text-red-600 text-xs">Por favor, captura nuevamente las fotos de llegada y confirma.</p>
+            </div>
+          )}
         {/* INFO */}
         <div className="bg-white rounded-2xl p-6 border">
           <p className="text-sm text-gray-400 mb-2">Tracto</p>
@@ -126,40 +132,64 @@ export default function RegisterArrival() {
           </p>
         </div>
 
-        {/* FOTOS */}
-        <div className="bg-white rounded-2xl p-6 border">
-          <div className="flex justify-between mb-4">
-            <h3 className="font-bold">Fotos de Llegada</h3>
-            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-              photos.length >= 3 ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-600"
-            }`}>
-              {photos.length} / 3
-            </span>
-          </div>
+        {/* FOTOS LLEGADA - REEMPLAZO O CAPTURA INDIVIDUAL */}
+<div className="bg-white rounded-2xl p-6 border">
+  <div className="flex justify-between mb-4">
+    <h3 className="font-bold">Fotos NOVELIS (Evidencia)</h3>
+    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+      photos.length >= 3 ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-600"
+    }`}>
+      {photos.length} / 3
+    </span>
+  </div>
 
-          <button
-            onClick={() => navigate(`/camera/${id}/llegada`)}
-            disabled={photos.length >= 3}
-            className={`w-full border-2 border-dashed rounded-2xl py-10 flex flex-col items-center gap-3 ${
-              photos.length >= 3
-                ? "bg-green-50 border-green-300"
-                : "hover:bg-gray-50"
-            }`}
-          >
-            {photos.length >= 3 ? (
-              <CheckCircle2 size={40} className="text-green-600" />
-            ) : (
-              <Camera size={40} />
-            )}
-
-            <span className="font-bold">
-              {photos.length === 0 && "Capturar Primera Foto"}
-              {photos.length === 1 && "Capturar Segunda Foto"}
-              {photos.length === 2 && "Capturar Tercera Foto"}
-              {photos.length >= 3 && "Completado"}
-            </span>
-          </button>
+  {/* Grilla de 3 espacios para fotos */}
+  <div className="grid grid-cols-3 gap-3">
+    {[0, 1, 2].map((index) => {
+      const photo = photos[index];
+      return (
+        <div key={index} className="relative aspect-square">
+          {photo ? (
+            // Si la foto existe, mostramos la miniatura
+            <div className="relative h-full w-full">
+              <img 
+                src={photo.url} 
+                alt={`Evidencia ${index + 1}`}
+                className="h-full w-full object-cover rounded-xl border-2 border-gray-100" 
+              />
+              {/* Botón invisible sobre la foto para poder repetirla */}
+              <button 
+                onClick={() => navigate(`/camera/${id}/llegada?photoId=${photo.id}`)}
+                className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 active:opacity-100 transition-opacity rounded-xl"
+              >
+                <Camera className="text-white" size={20} />
+              </button>
+            </div>
+          ) : (
+            // Si el espacio está vacío, mostramos el botón para capturar
+            <button
+              onClick={() => navigate(`/camera/${id}/llegada`)}
+              disabled={isSubmitting}
+              className="h-full w-full border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center bg-gray-50 active:bg-blue-50 transition-colors"
+            >
+              <Camera className="text-gray-400 mb-1" size={24} />
+              <span className="text-[10px] font-bold text-gray-400 uppercase">Foto {index + 1}</span>
+            </button>
+          )}
         </div>
+      );
+    })}
+  </div>
+  
+  {/* Aviso para el chofer si el administrador rechazó el viaje */}
+  {trip.status === "Rechazado" && (
+    <div className="mt-4 p-3 bg-red-50 rounded-xl border border-red-100">
+       <p className="text-red-600 text-[11px] font-bold text-center uppercase tracking-wider">
+        ⚠️ Toca la foto que está mal para repetirla
+      </p>
+    </div>
+  )}
+</div>
 
         {/* BOTÓN FINAL */}
         <button

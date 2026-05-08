@@ -7,6 +7,11 @@ const CameraUpload = () => {
   const { tripId, type } = useParams();
   const navigate = useNavigate();
   
+// Obtener photoId si existe (para reemplazos)
+  const queryParams = new URLSearchParams(window.location.search);
+  const photoId = queryParams.get('photoId');
+  
+  
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [image, setImage] = useState(null);
@@ -59,62 +64,68 @@ const CameraUpload = () => {
     }
   };
 
-    const uploadPhoto = async () => {
-  if (!image || !tripId) {
-    alert("Faltan datos");
-    return;
-  }
-  
+  const uploadPhoto = async () => {
+      if (!image || !tripId) {
+        alert("Faltan datos");
+        return;
+      }
 
-  setUploading(true);
- 
+      setUploading(true);
 
-  try {
+      try {
     const base64ToBlob = (base64) => {
       const arr = base64.split(',');
       const mime = arr[0].match(/:(.*?);/)[1];
       const bstr = atob(arr[1]);
       let n = bstr.length;
       const u8arr = new Uint8Array(n);
-
       while (n--) {
         u8arr[n] = bstr.charCodeAt(n);
       }
-
       return new Blob([u8arr], { type: mime });
     };
 
     const blob = base64ToBlob(image);
-
     const formData = new FormData();
     formData.append('file', blob, `trip_${tripId}_${type}.jpeg`);
 
-    const finalUrl = `${API_URL}/api/TripPhotos/${tripId}?type=${(type || "").toUpperCase()}`;
+    // --- LÓGICA DINÁMICA DE URL Y MÉTODO ---
+    // Si hay photoId es un reemplazo (PUT), si no, es nueva (POST)
+    let finalUrl;
+    let method;
 
-    console.log("Subiendo a:", finalUrl);
+    if (photoId) {
+      // Endpoint para actualizar foto existente
+      finalUrl = `${API_URL}/api/TripPhotos/update/${photoId}`;
+      method = "PUT";
+    } else {
+      // Endpoint normal para nueva foto
+      finalUrl = `${API_URL}/api/TripPhotos/${tripId}?type=${(type || "").toUpperCase()}`;
+      method = "POST";
+    }
+
+    console.log(`${method} a:`, finalUrl);
 
     const uploadRes = await fetch(finalUrl, {
-      method: "POST",
+      method: method,
       body: formData
     });
 
-    const text = await uploadRes.text();
-    console.log("RESPUESTA:", text);
-
     if (uploadRes.ok) {
-      alert("Foto subida ✔");
+      alert(photoId ? "Foto corregida ✔" : "Foto subida ✔");
       navigate(-1);
     } else {
+      const text = await uploadRes.text();
       alert("Error servidor: " + text);
     }
 
-  } catch (err) {
+    } catch (err) {
     console.error("ERROR REAL:", err);
-    alert("ERROR REAL: " + err.message);
-  } finally {
+      alert("ERROR REAL: " + err.message);
+    } finally {
     setUploading(false);
-  }
-};
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-between p-4 text-white">

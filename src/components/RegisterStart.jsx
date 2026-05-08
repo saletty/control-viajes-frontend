@@ -100,7 +100,7 @@ const selectedTrip = tripsData.find(t => t.id === parseInt(id));
         <button onClick={() => navigate(-1)} className="text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-all">
           <ChevronLeft size={24} />
         </button>
-        <h1 className="text-xl font-bold tracking-tight">Registrar Salida</h1>
+        <h1 className="text-xl font-bold tracking-tight">Registrar Salida AGESA</h1>
       </header>
 
       <div className="max-w-xl mx-auto p-4 space-y-6 mt-2">
@@ -125,37 +125,58 @@ const selectedTrip = tripsData.find(t => t.id === parseInt(id));
           </div>
         </div>
 
-        {/* Card: Captura de Evidencia (Fotos) */}
-        <div className="bg-white rounded-[2rem] border border-gray-100 p-7 shadow-sm">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-gray-900 text-lg">Fotos AGESA</h3>
-            <span className={`px-4 py-1.5 rounded-full text-xs font-black tracking-tighter ${photos.length >= 3 ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-600'}`}>
-              {photos.length} / 3
-            </span>
-          </div>
-
-          <button 
-            onClick={() => navigate(`/camera/${id}/salida`)}
-            disabled={photos.length >= 3 || issubmitting}
-            className={`w-full border-2 border-dashed rounded-[1.5rem] py-12 flex flex-col items-center justify-center gap-4 transition-all group ${
-              photos.length >= 3 ? 'bg-green-50 border-green-200' : 'border-gray-200 hover:bg-gray-50 hover:border-blue-200'
-            }`}
-          >
-            <div className={`p-5 rounded-full shadow-sm transition-transform group-active:scale-90 ${photos.length >= 3 ? 'bg-green-100' : 'bg-gray-100'}`}>
-              {photos.length >= 3 ? (
-                <CheckCircle2 className="text-green-600" size={36} />
-              ) : (
-                <Camera className="text-gray-400 group-hover:text-blue-600" size={36} />
-              )}
+        {/* Card: Captura de Evidencia (Fotos) - ESTILO GRILLA */}
+          <div className="bg-white rounded-[2rem] border border-gray-100 p-7 shadow-sm">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-gray-900 text-lg">Fotos AGESA</h3>
+              <span className={`px-4 py-1.5 rounded-full text-xs font-black tracking-tighter ${
+                photos.length >= 3 ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-600'
+              }`}>
+                {photos.length} / 3
+              </span>
             </div>
-            <span className={`font-bold text-lg ${photos.length >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-              {photos.length === 0 && "Capturar Primera Foto"}
-              {photos.length === 1 && "Capturar Segunda Foto"}
-              {photos.length === 2 && "Capturar Tercera Foto"}
-              {photos.length >= 3 && "Evidencia Completada"}
-            </span>
-          </button>
-        </div>
+
+            {/* Grilla de 3 espacios */}
+            <div className="grid grid-cols-3 gap-3">
+              {[0, 1, 2].map((index) => {
+                const photo = photos[index];
+                return (
+                  <div key={index} className="relative aspect-square">
+                    {photo ? (
+                      <div className="relative h-full w-full">
+                        <img 
+                          src={photo.url} 
+                          alt={`Salida ${index + 1}`}
+                          className="h-full w-full object-cover rounded-2xl border-2 border-gray-50" 
+                        />
+                        {/* Botón para repetir foto si se equivocan */}
+                        <button 
+                          onClick={() => navigate(`/camera/${id}/salida?photoId=${photo.id}`)}
+                          className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 active:opacity-100 transition-opacity rounded-2xl"
+                        >
+                          <Camera className="text-white" size={20} />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => navigate(`/camera/${id}/salida`)}
+                        disabled={issubmitting}
+                        className="h-full w-full border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center bg-gray-50 active:bg-blue-50 transition-colors"
+                      >
+                        <Camera className="text-gray-400 mb-1" size={24} />
+                        <span className="text-[9px] font-black text-gray-400 uppercase">Foto {index + 1}</span>
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Mensaje de ayuda */}
+            <p className="text-[10px] text-gray-400 mt-4 text-center font-bold uppercase tracking-wider">
+              {photos.length < 3 ? "Toca un recuadro para capturar" : "Fotos capturadas correctamente"}
+            </p>
+          </div>
 
         {/* Botón Final de Acción */}
         <div className="pt-4">

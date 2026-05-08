@@ -144,42 +144,43 @@ const DriverDashboard = () => {
                       })
                     : 'Sin fecha'}
                 </p>
-              </div>
+                </div>
 
-              {/* BOTONES DINÁMICOS */}
-              <div className="space-y-3">
+                   {/* BOTONES DINÁMICOS */}
+                  <div className="space-y-3">
 
-                {/* 🔥 SALIDA */}
-                {trip.status === "Pendiente" && (
-                  <button 
-                    onClick={() => navigate(`/register-exit/${trip.id}`)}
-                    className="w-full bg-[#05050a] text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-transform text-lg"
-                  >
-                    <Camera size={22} />
-                    Registrar Salida
-                  </button>
-                )}
+                    {/* REGISTRAR SALIDA: Solo si está Pendiente */}
+                    {trip.status === "Pendiente" && (
+                      <button 
+                        onClick={() => navigate(`/register-exit/${trip.id}`)}
+                        className="w-full bg-[#05050a] text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-transform text-lg"
+                      >
+                        <Camera size={22} />
+                        Registrar Salida
+                      </button>
+                    )}
 
-                {/* 🔥 LLEGADA */}
-                {trip.status === "EnRuta" && (
-                  <button 
-                    onClick={() => navigate(`/register-arrival/${trip.id}`)}
-                    className="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-transform text-lg"
-                  >
-                    <Camera size={22} />
-                    Registrar Llegada
-                  </button>
-                )}
+                    {/* REGISTRAR LLEGADA o RE-SUBIR POR RECHAZO */}
+                    {(trip.status === "EnRuta" || trip.status === "Rechazado") && (
+                      <button 
+                        onClick={() => navigate(`/register-arrival/${trip.id}`)}
+                        className={`w-full py-5 rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-transform text-lg text-white ${
+                          trip.status === "Rechazado" ? "bg-red-600 animate-pulse" : "bg-blue-600"
+                        }`}
+                      >
+                        <Camera size={22} />
+                        {trip.status === "Rechazado" ? "Corregir Evidencia (Rechazado)" : "Registrar Llegada"}
+                      </button>
+                    )}
 
-                {/* DETALLES */}
-                <button 
-                  onClick={() => navigate(`/trip-details/${trip.id}`)}
-                  className="w-full bg-white border border-gray-100 py-4 rounded-2xl font-bold text-gray-900 hover:bg-gray-50 transition-colors"
-                >
-                  Ver Detalles
-                </button>
-
-              </div>
+                    {/* VER DETALLES: Siempre disponible */}
+                    <button 
+                      onClick={() => navigate(`/trip-details/${trip.id}`)}
+                      className="w-full bg-white border border-gray-100 py-4 rounded-2xl font-bold text-gray-900 hover:bg-gray-50 transition-colors"
+                    >
+                      Ver Detalles
+                    </button>
+                </div>
             </div>
 
           ))}
