@@ -156,7 +156,7 @@ const DriverDashboard = () => {
                         className="w-full bg-[#05050a] text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-transform text-lg"
                       >
                         <Camera size={22} />
-                        Registrar Salida
+                        Registrar Salida AGESA
                       </button>
                     )}
 
@@ -169,7 +169,7 @@ const DriverDashboard = () => {
                         }`}
                       >
                         <Camera size={22} />
-                        {trip.status === "Rechazado" ? "Corregir Evidencia (Rechazado)" : "Registrar Llegada"}
+                        {trip.status === "Rechazado" ? "Corregir Evidencia (Rechazado)" : "Registrar Llegada NOVELIS"}
                       </button>
                     )}
 
