@@ -88,7 +88,7 @@ const LoginScreen = () => {
             <label className="text-sm font-bold text-gray-700 ml-1">Usuario</label>
             <input
               type="text"
-              placeholder="Ej: Salet"
+              placeholder="Usuario"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full p-4 border rounded-2xl focus:ring-2 focus:ring-black outline-none transition-all"
